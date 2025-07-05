@@ -53,7 +53,7 @@ const Home = () => {
               marginTop: "1rem",
             }}
           >
-            Chinari
+            Chinari url
           </Title>
 
           <Text
