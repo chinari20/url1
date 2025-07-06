@@ -32,10 +32,8 @@ export default function ProfilePage() {
     >
         <Text size="lg">This is my profilePage</Text>
         <Avatar src={user.avatar} alt = "it's me"/>
-        <img src={user.avatar} alt="me"/>
         <Text>{user.name}</Text>
         <Text>{user.email}</Text>
-        <Text>show the id</Text>
         </Stack>
     </div>
   )
