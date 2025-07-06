@@ -36,7 +36,7 @@ export default function UrlShortner() {
             }} required label="Original Url"/>
 
              
-                <TextInput onChange={(e)=>{setInput({...InputDescription,customUrl:e.target.value});}}
+                <TextInput onChange={(e)=>{setInput({...input,customUrl:e.target.value});}}
                 label="custom url"
                 placeholder="Input placeholder"
                 />
