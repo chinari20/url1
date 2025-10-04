@@ -1,28 +1,24 @@
-import { Avatar } from '@mantine/core';
-import React, { useEffect, useState } from 'react'
-import { Stack} from '@mantine/core';
-import { Text } from '@mantine/core';
+import React,{use, useEffect,useState} from 'react'
 import Service from '../utils/http';
-const service = new Service()
-
-
-export default function ProfilePage() {
-    const[user,setUser] = useState({});
-    async function getMyData() {
+import {Avatar} from '@mantine/core';
+import { Stack, Button } from '@mantine/core';
+import { Text } from '@mantine/core';
+const service=new Service();
+export default function Profile() {
+    const [user,setUser]=useState({});
+    async function getMyData(){
         try{
-            let data = await service.get("user/me");
+            let data=await service.get("user/me");
             setUser(data);
-        }
-        catch(error){
-            console.log(error);
+        }catch(err){
+            console.log( err);
         }
     }
-  useEffect(()=>{
-      getMyData();
-
-  },[])
-  return ( 
-    <div>
+    useEffect(()=>{
+        getMyData();
+    },[])
+    return (
+        <div>
         <Stack
       h={300}
       bg="var(--mantine-color-body)"
@@ -30,11 +26,12 @@ export default function ProfilePage() {
       justify="center"
       gap="md"
     >
-        <Text size="lg">This is my profilePage</Text>
-        <Avatar src={user.avatar} alt = "it's me"/>
-        <Text>{user.name}</Text>
-        <Text>{user.email}</Text>
+            <Avatar src={user.avatar} alt={user.name} radius="100%" size="xl" />
+             <Text size="xl">{user.name}</Text>
+            <Text c="dimmed">{user.email}</Text>
+            <Text size="md"><strong>User Id :</strong>{user._id} </Text>
+             <Text size="md"><strong>Account Created :</strong>{user.createdAt} </Text>
         </Stack>
-    </div>
-  )
+        </div>
+    )
 }

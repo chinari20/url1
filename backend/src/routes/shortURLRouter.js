@@ -1,13 +1,12 @@
 import { Router } from "express";
-import { protect } from "../middlewares/authMiddleware.js"
-import {shortUrl ,  getShortUrl} from "../controllers/shortUrlController.js"
+import { protect } from "../middlewares/authMiddleware.js";
+import { redirectFunction, shortUrl, getUserUrls } from "../controllers/shortUrlController.js";
 
 const shortURLRouter = Router();
 
-
-shortURLRouter.post("",protect,shortUrl);
-shortURLRouter.get("/:shortcode",getShortUrl);
-
+shortURLRouter.post("", protect, shortUrl);
+shortURLRouter.get("/:shortcode", redirectFunction);
+// GET /api/s/history - get all URLs for the logged-in user
+shortURLRouter.get("/history", protect, getUserUrls);
 
 export default shortURLRouter;
-

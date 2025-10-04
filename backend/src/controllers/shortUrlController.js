@@ -1,59 +1,68 @@
+import { nanoid } from "nanoid";
 import { ShortURL } from "../models/shorturl.model.js";
-import{nanoid} from "nanoid";
-export const shortUrl=async(req,res)=>{
-    try{
-        const userId = req.user.id;
-        const{originalUrl,expiesAt,title,customUrl} = req.body;
-        if(!originalUrl){
-            return res.status(400).send({status:"missing originalUrl in the payload"});
-        }
 
-        let shortCode ="";
-        if(customUrl){
-            shortCode=customUrl;
-            let exitData = await ShortURL.findOne({shortCode});
-            if(exitData) return res.status(400).send({status:"it is bad request"});
-        }
-        else{
-            shortCode=nanoid(7);
-            let isUnique = false;
-            while(!isUnique){
-                const exitData = await ShortURL.findOne({shortCode});
-                if(!exitData) isUnique=true;
-                shortCode = nanoid(7);
-            }
-        }
-        const newUser = new ShortURL({
-            originalUrl,
-            shortCode,
-            userId,
-        })
-        await newUser.save();
-        return res.status(200).send(newUser);
-
+export const shortUrl = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { originalUrl, expiresAt, title, customUrl } = req.body;
+    if (!originalUrl) {
+      return res.status(400).send({ error: "Original URL is required" });
     }
-    catch(error){
-        console.log(error);
-        return res.status(500).send({status:"INTERNAL_SERVER_ERROR"});
+    let shortCode = "";
+    if (customUrl) {
+      shortCode = customUrl;
+      const existData = await ShortURL.findOne({ shortCode });
+      if (existData) {
+        return res.status(400).send({ error: "try with new url" });
+      }
+    } else {
+      shortCode = nanoid(7);
+      let isUnique = false;
+      while (!isUnique) {
+        const existData = await ShortURL.findOne({ shortCode });
+        if (existData) {
+          shortCode = nanoid(7);
+        } else {
+          isUnique = true;
+        }
+      }
     }
+    const newUser = new ShortURL({
+      originalUrl,
+      shortCode,
+      userId,
+    });
+    await newUser.save();
+    return res.status(200).send(newUser);
+  } catch (error) {
+    console.error("Error creating short URL:", error);
+    return res.status(500).send({ error: "Internal server error" });
+  }
+};
 
+export const redirectFunction = async (req, res) => {
+  try {
+    const { shortcode } = req.params;
+    const shortUrlData = await ShortURL.findOne({ shortCode: shortcode });
+    if (!shortUrlData) {
+      return res.status(404).send({ error: "Short URL not found" });
+    }
+    // Redirect to the original URL
+    return res.redirect(shortUrlData.originalUrl);
+  } catch (error) {
+    console.error("Error redirecting:", error);
+    return res.status(500).send({ error: "Internal server error" });
+  }
+};
+
+export async function getUserUrls(req, res) {
+  try {
+    // Assuming you have user info in req.user (from auth middleware) - checking if user is authenticated
+    const userId = req.user.id;
+    const urls = await ShortURL.find({ user: userId }).sort({ createdAt: -1 });
+    res.json(urls);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch URLs" });
+  }
 }
 
-export const getShortUrl=async(req,res)=>{
-    try{
-        const shortCode = req.params.shortcode;
-         
-        const data = await ShortURL.findOne({shortCode});
-        console.log(data);
-        if(!data){
-            return res.status(404).send({status:"Not found"});
-        }
-       
-        return res.redirect(data.originalUrl);
-
-    }
-    catch(error){
-        console.log(error);
-        return res.status(500).send({status:"INTERNAL_SERVER_ERROR"});
-    }
-}
