@@ -4,9 +4,9 @@ import { redirectFunction, shortUrl, getUserUrls } from "../controllers/shortUrl
 
 const shortURLRouter = Router();
 
-shortURLRouter.post("", protect, shortUrl);
-shortURLRouter.get("/:shortcode", redirectFunction);
+shortURLRouter.post("/", protect, shortUrl);
 // GET /api/s/history - get all URLs for the logged-in user
 shortURLRouter.get("/history", protect, getUserUrls);
+shortURLRouter.get("/:shortcode", redirectFunction);
 
 export default shortURLRouter;

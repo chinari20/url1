@@ -20,10 +20,6 @@ function App() {
         <Route path='/profile' element={<ProfilePage />} />
         <Route path="/url/shortener" element={<UrlShortner />} />
         <Route path="/my-urls" element={<MyURLs />} />
-
-        <Route element={<PrivateRoute />}>
-
-        </Route>
       </Routes>
     </Router>
   )

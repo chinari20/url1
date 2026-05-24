@@ -12,20 +12,34 @@ import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 const queryClient = new QueryClient();
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const rootElement = document.getElementById('root');
 
-createRoot(document.getElementById('root')).render(
+if (!rootElement) {
+  throw new Error('Root element not found');
+}
+
+const app = (
   <StrictMode>
-    <GoogleOAuthProvider clientId={googleClientId}>
-      <MantineProvider>
-        <Notifications zIndex={9999} />
-        <QueryClientProvider client={queryClient}>
-            <Provider store={store}>
-              <PersistGate loading={null} persistor={persistor}>
-                <App />
-              </PersistGate>
-            </Provider>
-        </QueryClientProvider>
-      </MantineProvider>
-    </GoogleOAuthProvider>
+    <MantineProvider>
+      <Notifications zIndex={9999} />
+      <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+      </QueryClientProvider>
+    </MantineProvider>
   </StrictMode>
 );
+
+if (googleClientId) {
+  createRoot(rootElement).render(
+    <GoogleOAuthProvider clientId={googleClientId}>
+      {app}
+    </GoogleOAuthProvider>
+  );
+} else {
+  console.warn('VITE_GOOGLE_CLIENT_ID is not set. Google OAuth login will be disabled.');
+  createRoot(rootElement).render(app);
+}
